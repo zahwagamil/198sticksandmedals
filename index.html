@@ -156,7 +156,7 @@ a.orderbtn2:hover{filter:brightness(.96)}
         <div class="field" style="max-width:240px;margin-bottom:14px"><label for="who">Who is in the photo</label>
           <select id="who"><option value="girl">Girl</option><option value="boy">Boy</option><option value="person">Person</option></select></div>
         <div class="field" style="max-width:240px;margin-bottom:14px"><label for="pose">Pose</label>
-          <select id="pose"><option value="original">Keep original pose</option><option value="stand">Standing normally</option><option value="notebook">Holding a notebook</option><option value="peace">Peace sign</option></select>
+          <select id="pose"><option value="original">Keep original pose</option><option value="stand">Standing normally</option><option value="notebook">Holding a notebook</option><option value="peace">Peace sign</option><option value="pocket">Hands in coat pockets</option></select>
           <span class="hint">Hands are always kept natural, with five fingers each.</span></div>
         <div class="chips" id="outfit"></div>
       </div>
@@ -438,6 +438,8 @@ function poseParagraph(c, pl2){
     notebook: `Pose: holding a small closed ${c.M} notebook against ${pl2} chest with both hands, held low enough that it does not cover ${pl2} face, the stethoscope or the rosette. Keep ${pl2} head position, facial expression and natural appearance unchanged. The notebook is part of the pose, not an extra decoration. ${HANDS}`,
     peace: `Pose: giving a classic peace sign (V sign) with one hand raised beside ${pl2} shoulder, palm facing outward, index and middle fingers extended and the other fingers curled, with the other arm relaxed at ${pl2} side. The raised hand must not cover ${pl2} face. Keep ${pl2} head position, facial expression and natural appearance unchanged. ${HANDS}`
   };
+  const coat = (S.design === 'sticker' ? S.sOutfit : S.outfit).coat;
+  POSES.pocket = `Pose: standing relaxed and upright with both hands tucked into the front pockets of ${coat ? 'the white lab coat' : pl2 + ' clothes'}, so the hands are hidden inside the pockets and only the wrists or a natural thumb may show. Keep ${pl2} head position, facial expression and natural appearance unchanged. Any visible fingers or thumbs must look completely normal and natural, with correct proportions and no extra, missing or fused fingers.`;
   return POSES[S.pose || 'original'];
 }
 function topperColors(c){
@@ -533,7 +535,8 @@ function buildTopperPrompt(c, fit, pl){
     `Do not alter the original smile or teeth.`,
     `Do not change ${P.toLowerCase()} glasses or hair.`
   ];
-  if (S.pose && S.pose !== 'original') strict.push(`Hands must look normal and natural, with exactly five fingers each.`);
+  if (S.pose === 'pocket') strict.push(`Hands stay tucked in the pockets, and any visible thumbs or wrists must look normal and natural.`);
+  else if (S.pose && S.pose !== 'original') strict.push(`Hands must look normal and natural, with exactly five fingers each.`);
   if (!S.outfit.cap) strict.push(`Do not add a graduation cap or hat.`);
   strict.push(`Do not add a stick or mockup.`, `Do not introduce extra text or objects.`, `All lettering must be spelled correctly and remain fully visible.`);
   L.push(`**STRICT REQUIREMENTS:**\n` + strict.map(t => '- ' + t).join('\n'));
